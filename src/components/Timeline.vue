@@ -11,12 +11,11 @@
         {{ itme }}
       </a>
     </p>
-    <a v-for="post in posts" :key="post.id" class="panel-block">
-      <div>
-        <a>{{ post.title }}</a>
-        <div>{{ post.created }}</div>
-      </div>
-    </a>
+    <TimelinePost
+      v-for="post in posts"
+      :key="post.id"
+      :post="post"
+    />
   </nav>
 </template>
 
@@ -25,8 +24,27 @@ import { computed, defineComponent, ref } from "vue";
 import { Period, Post } from "@/types";
 import { todayPost, thisWeek, thisMonth } from "@/moke";
 import moment from "moment";
+import TimelinePost from "./TimelinePost.vue";
+import { useStore } from "@/store";
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export default defineComponent({
-  setup() {
+  components: {
+    TimelinePost,
+  },
+  async setup() {
+    const store = useStore();
+    console.log(store.getState());
+
+    // const storeIds = store.getState().posts.ids;
+    // console.log(storeIds, "id");
+
+    // console.log(store.getState().posts.ids.reduce<Post>);
+    // storeIds.reduce<Post[]>((acc, id) => {
+    //   console.log(acc, id);
+
+    //   const post = store.getState().posts.all[id];
+    //   return acc.concat(post);
+    // }, []);
     const periods: Period[] = ["今天", "本周", "本月"];
     // 当前被选中的值
     const selectedPeriod = ref<Period>("今天");
@@ -35,6 +53,8 @@ export default defineComponent({
       selectedPeriod.value = val;
       console.log(posts);
     };
+    // 会阻塞页面两秒后页面显示数据
+    await delay(2000);
     // 展示数据
     // const posts: Post[] = [todayPost, thisWeek, thisMonth]
     const posts = computed(() => {
@@ -45,24 +65,23 @@ export default defineComponent({
           post.created.isAfter(moment().subtract(1, "day"))
         ) {
           return true;
-        } 
-        // 
+        }
+        //
         if (
           selectedPeriod.value === "本周" &&
           post.created.isAfter(moment().subtract(7, "days"))
         ) {
           return true;
-        } 
+        }
         //
         if (
           selectedPeriod.value === "本月" &&
           post.created.isAfter(moment().subtract(1, "month"))
         ) {
           return true;
-        } 
+        }
         return false;
       });
-      
     });
     return { periods, selectedPeriod, setPeriod, posts };
   },

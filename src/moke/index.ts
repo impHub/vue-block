@@ -15,12 +15,14 @@ export const todayPost: Post = {
 };
 export const thisWeek: Post = {
   ...basePost,
+  id: 2,
   title: "本周",
   // 2days(天前)
   created: moment().subtract(2, "days"),
 };
 export const thisMonth: Post = {
   ...basePost,
+  id: 3,
   title: "本月",
   //   1个 weeks(星期前)
   created: moment().subtract(1, "weeks"),
