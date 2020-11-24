@@ -25,7 +25,7 @@ import { Period, Post } from "@/types";
 import { todayPost, thisWeek, thisMonth } from "@/moke";
 import moment from "moment";
 import TimelinePost from "./TimelinePost.vue";
-import { useStore } from "@/store";
+import { useStore } from "@/store/index3";
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export default defineComponent({
   components: {
@@ -33,18 +33,17 @@ export default defineComponent({
   },
   async setup() {
     const store = useStore();
-    console.log(store.getState());
 
-    // const storeIds = store.getState().posts.ids;
-    // console.log(storeIds, "id");
+    console.log(store.getState().posts.ids);
 
-    // console.log(store.getState().posts.ids.reduce<Post>);
-    // storeIds.reduce<Post[]>((acc, id) => {
-    //   console.log(acc, id);
-
-    //   const post = store.getState().posts.all[id];
-    //   return acc.concat(post);
-    // }, []);
+    const allPosts = store.getState().posts.ids.reduce<Post[]>((acc, id) => {
+      const post = store.getState().posts.all[id];
+      // console.log(acc, id, "--", post);
+      // 相当于吧 acc.
+      acc.push(post);
+      // return acc.concat(post);
+      return acc;
+    }, []);
     const periods: Period[] = ["今天", "本周", "本月"];
     // 当前被选中的值
     const selectedPeriod = ref<Period>("今天");
@@ -58,7 +57,7 @@ export default defineComponent({
     // 展示数据
     // const posts: Post[] = [todayPost, thisWeek, thisMonth]
     const posts = computed(() => {
-      return [todayPost, thisWeek, thisMonth].filter((post) => {
+      return allPosts.filter((post) => {
         // 等于今天 并且在24小时内
         if (
           selectedPeriod.value === "今天" &&

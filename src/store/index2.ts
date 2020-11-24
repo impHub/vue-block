@@ -55,4 +55,4 @@ const store = new Store(initalState());
 
 store.getState();
 
-export const userStore = () => store
+export const useStore = () => store
